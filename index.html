@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification de certificat</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #111d2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background-color: #f8f9fa;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 100vh;
+            justify-content: space-between;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #111d2e;
+            margin-bottom: 35px;
+            letter-spacing: -0.5px;
+        }
+
+        .icon-container-home {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .icon-bg-home {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            background-color: #e2ecf7;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .briefcase {
+            position: relative;
+            z-index: 2;
+            width: 64px;
+            height: 48px;
+            background-color: #1d4ed8;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .briefcase-handle {
+            position: absolute;
+            top: -10px;
+            width: 22px;
+            height: 10px;
+            border: 3px solid #60a5fa;
+            border-bottom: none;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        .briefcase-lock {
+            width: 14px;
+            height: 10px;
+            background-color: #fbbf24;
+            border-radius: 2px;
+        }
+
+        .icon-container-result {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .icon-bg-result {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            background-color: #d1fae5;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .check-icon {
+            position: relative;
+            z-index: 2;
+            font-size: 52px;
+            color: #059669;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        /* Styles pour l'écran de chargement */
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #e2ecf7;
+            border-top: 6px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.5;
+            color: #111d2e;
+            max-width: 380px;
+            margin-bottom: 40px;
+        }
+
+        .highlight-name {
+            background-color: #f1f3f5;
+            padding: 2px 6px;
+            font-weight: bold;
+        }
+
+        .highlight-bold {
+            font-weight: bold;
+        }
+
+        .btn {
+            width: 100%;
+            max-width: 420px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            transition: background-color 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- ÉCRAN 1 : ACCUEIL -->
+        <div id="screen-home" class="screen active">
+            <div class="content-wrapper">
+                <h1>Vérification de certificat</h1>
+                
+                <div class="icon-container-home">
+                    <div class="icon-bg-home"></div>
+                    <div class="briefcase">
+                        <div class="briefcase-handle"></div>
+                        <div class="briefcase-lock"></div>
+                    </div>
+                </div>
+
+                <p>Cette page permet de vérifier l'authenticité d'un certificat délivré via MEDADOM.</p>
+            </div>
+
+            <button class="btn" onclick="startVerification()">Vérifier</button>
+        </div>
+
+        <!-- ÉCRAN DE CHARGEMENT -->
+        <div id="screen-loading" class="screen">
+            <div class="content-wrapper" style="justify-content: center; flex: 1;">
+                <h1>Vérification en cours...</h1>
+                <div class="spinner"></div>
+                <p>Veuillez patienter pendant que nous validons les informations du certificat.</p>
+            </div>
+            <div style="height: 60px;"></div>
+        </div>
+
+        <!-- ÉCRAN 2 : RÉSULTAT -->
+        <div id="screen-result" class="screen">
+            <div class="content-wrapper">
+                <h1>Vérification du certificat</h1>
+
+                <div class="icon-container-result">
+                    <div class="icon-bg-result"></div>
+                    <div class="check-icon">✓</div>
+                </div>
+
+                <p>
+                    Certificat médical du 28/09/2026 prescrit par le docteur <span class="highlight-name">Louis FOGANG</span> pour le patient dont les initiales sont <span class="highlight-bold">B.H</span> né(e) le <span class="highlight-bold">08/05/2005</span>
+                </p>
+            </div>
+
+            <button class="btn" onclick="quitToMedadom()">Quitter</button>
+        </div>
+    </div>
+
+    <script>
+        function startVerification() {
+            // Masquer l'accueil et afficher le chargement
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-loading').classList.add('active');
+
+            // Attendre 2.5 secondes avant d'afficher l'écran de résultat
+            setTimeout(function() {
+                document.getElementById('screen-loading').classList.remove('active');
+                document.getElementById('screen-result').classList.add('active');
+            }, 2500);
+        }
+
+        function quitToMedadom() {
+            window.location.href = "https://www.medadom.com";
+        }
+    </script>
+</body>
+</html>
